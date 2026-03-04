@@ -1,0 +1,8 @@
+{
+    "Name": "EventLogViewer",
+    "TabLabel": "Event Logs",
+    "Description": "Browse and filter Windows event logs without Event Viewer (mmc.exe).",
+    "Version": "1.0.0",
+    "EntryScript": "EventLogViewer.ps1",
+    "InitFunction": "Initialize-EventLogViewer"
+}

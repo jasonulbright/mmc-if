@@ -1,0 +1,8 @@
+{
+    "Name": "RegistryBrowser",
+    "TabLabel": "Registry",
+    "Description": "Browse and edit the Windows registry. Read-only for all hives except HKCU (full read-write).",
+    "Version": "1.0.0",
+    "EntryScript": "RegistryBrowser.ps1",
+    "InitFunction": "Initialize-RegistryBrowser"
+}

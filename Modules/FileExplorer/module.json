@@ -1,0 +1,8 @@
+{
+    "Name": "FileExplorer",
+    "TabLabel": "File Explorer",
+    "Description": "Admin-oriented file browser with hidden files, extensions, and 7-Zip archive browsing.",
+    "Version": "1.0.0",
+    "EntryScript": "FileExplorer.ps1",
+    "InitFunction": "Initialize-FileExplorer"
+}

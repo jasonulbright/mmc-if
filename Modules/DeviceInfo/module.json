@@ -1,0 +1,8 @@
+{
+    "Name": "DeviceInfo",
+    "TabLabel": "Device Info",
+    "Description": "View hardware and device information via WMI. No Device Manager (mmc.exe) required.",
+    "Version": "1.0.0",
+    "EntryScript": "DeviceInfo.ps1",
+    "InitFunction": "Initialize-DeviceInfo"
+}
