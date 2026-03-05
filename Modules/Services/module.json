@@ -1,0 +1,8 @@
+{
+    "Name": "Services",
+    "TabLabel": "Services",
+    "Description": "View and control Windows services. Start, stop, restart services without services.msc (mmc.exe).",
+    "Version": "1.0.0",
+    "EntryScript": "Services.ps1",
+    "InitFunction": "Initialize-Services"
+}

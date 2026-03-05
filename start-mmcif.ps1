@@ -1,9 +1,9 @@
-<#
+﻿<#
 .SYNOPSIS
     Plugin-based WinForms shell providing alternatives to Windows tools blocked by mmc.exe restrictions.
 
 .DESCRIPTION
-    MMC-Alt is a modular application that loads plugin modules from the Modules/ folder.
+    MMC-If is a modular application that loads plugin modules from the Modules/ folder.
     Each module provides an alternative UI for a Windows administration tool that is
     normally hosted in mmc.exe (regedit, Event Viewer, Device Manager, etc.).
 
@@ -11,7 +11,7 @@
     is blocked by endpoint protection policies.
 
 .EXAMPLE
-    .\start-mmcalt.ps1
+    .\start-mmcif.ps1
 
 .NOTES
     Requirements:
@@ -19,9 +19,9 @@
       - .NET Framework 4.8+
       - Windows Forms (System.Windows.Forms)
 
-    ScriptName : start-mmcalt.ps1
+    ScriptName : start-mmcif.ps1
     Purpose    : Plugin shell for MMC alternative tools
-    Version    : 1.0.0
+    Version    : 1.2.0
     Updated    : 2026-03-04
 #>
 
@@ -34,14 +34,14 @@ Add-Type -AssemblyName System.Drawing
 try { [System.Windows.Forms.Application]::SetCompatibleTextRenderingDefault($false) } catch { }
 
 $moduleRoot = Join-Path $PSScriptRoot "Module"
-Import-Module (Join-Path $moduleRoot "MmcAltCommon.psd1") -Force -DisableNameChecking
+Import-Module (Join-Path $moduleRoot "MmcIfCommon.psd1") -Force -DisableNameChecking
 
 # Initialize tool logging
 $toolLogFolder = Join-Path $PSScriptRoot "Logs"
 if (-not (Test-Path -LiteralPath $toolLogFolder)) {
     New-Item -ItemType Directory -Path $toolLogFolder -Force | Out-Null
 }
-$toolLogPath = Join-Path $toolLogFolder ("MmcAlt-{0}.log" -f (Get-Date -Format 'yyyyMMdd-HHmmss'))
+$toolLogPath = Join-Path $toolLogFolder ("MmcIf-{0}.log" -f (Get-Date -Format 'yyyyMMdd-HHmmss'))
 Initialize-Logging -LogPath $toolLogPath
 
 # ---------------------------------------------------------------------------
@@ -121,7 +121,7 @@ function New-ThemedGrid {
 }
 
 function Save-WindowState {
-    $statePath = Join-Path $PSScriptRoot "MmcAlt.windowstate.json"
+    $statePath = Join-Path $PSScriptRoot "MmcIf.windowstate.json"
     $state = @{
         X = $form.Location.X; Y = $form.Location.Y
         Width = $form.Size.Width; Height = $form.Size.Height
@@ -132,7 +132,7 @@ function Save-WindowState {
 }
 
 function Restore-WindowState {
-    $statePath = Join-Path $PSScriptRoot "MmcAlt.windowstate.json"
+    $statePath = Join-Path $PSScriptRoot "MmcIf.windowstate.json"
     if (-not (Test-Path -LiteralPath $statePath)) { return }
     try {
         $state = Get-Content -LiteralPath $statePath -Raw | ConvertFrom-Json
@@ -155,25 +155,48 @@ function Restore-WindowState {
 # Preferences
 # ---------------------------------------------------------------------------
 
-function Get-MmcAltPreferences {
-    $prefsPath = Join-Path $PSScriptRoot "MmcAlt.prefs.json"
-    $defaults = @{ DarkMode = $false }
+function Get-MmcIfPreferences {
+    $prefsPath = Join-Path $PSScriptRoot "MmcIf.prefs.json"
+    $defaults = @{ DarkMode = $false; DisabledModules = @() }
     if (Test-Path -LiteralPath $prefsPath) {
         try {
             $loaded = Get-Content -LiteralPath $prefsPath -Raw | ConvertFrom-Json
             if ($null -ne $loaded.DarkMode) { $defaults.DarkMode = [bool]$loaded.DarkMode }
+            if ($loaded.DisabledModules) { $defaults.DisabledModules = @($loaded.DisabledModules) }
         } catch { }
     }
     return $defaults
 }
 
-function Save-MmcAltPreferences {
+function Save-MmcIfPreferences {
     param([hashtable]$Prefs)
-    $prefsPath = Join-Path $PSScriptRoot "MmcAlt.prefs.json"
+    $prefsPath = Join-Path $PSScriptRoot "MmcIf.prefs.json"
     $Prefs | ConvertTo-Json | Set-Content -LiteralPath $prefsPath -Encoding UTF8
 }
 
-$script:Prefs = Get-MmcAltPreferences
+function Get-AvailableModules {
+    $modulesDir = Join-Path $PSScriptRoot "Modules"
+    $available = @()
+    if (Test-Path -LiteralPath $modulesDir) {
+        Get-ChildItem -LiteralPath $modulesDir -Directory -ErrorAction SilentlyContinue | ForEach-Object {
+            $manifestPath = Join-Path $_.FullName "module.json"
+            if (Test-Path -LiteralPath $manifestPath) {
+                try {
+                    $manifest = Get-Content -LiteralPath $manifestPath -Raw | ConvertFrom-Json
+                    if ($manifest.Name -and $manifest.EntryScript -and $manifest.InitFunction) {
+                        $available += @{
+                            Name = $manifest.Name
+                            TabLabel = if ($manifest.TabLabel) { $manifest.TabLabel } else { $manifest.Name }
+                        }
+                    }
+                } catch { }
+            }
+        }
+    }
+    return $available
+}
+
+$script:Prefs = Get-MmcIfPreferences
 
 # ---------------------------------------------------------------------------
 # Colors (theme-aware)
@@ -257,13 +280,23 @@ if ($script:Prefs.DarkMode) {
 # ---------------------------------------------------------------------------
 
 function Show-PreferencesDialog {
+    $scriptFile = Join-Path $PSScriptRoot "start-mmcif.ps1"
+    $availableModules = Get-AvailableModules
+
+    # Calculate dialog height based on module count
+    $moduleRowHeight = 22
+    $moduleGroupHeight = 40 + ([Math]::Max($availableModules.Count, 1) * $moduleRowHeight)
+    $dlgHeight = 100 + 60 + $moduleGroupHeight + 50
+    $btnY = $dlgHeight - 78
+
     $dlg = New-Object System.Windows.Forms.Form
-    $dlg.Text = "Preferences"; $dlg.Size = New-Object System.Drawing.Size(440, 200)
+    $dlg.Text = "Preferences"; $dlg.Size = New-Object System.Drawing.Size(440, $dlgHeight)
     $dlg.MinimumSize = $dlg.Size; $dlg.MaximumSize = $dlg.Size
     $dlg.StartPosition = "CenterParent"; $dlg.FormBorderStyle = [System.Windows.Forms.FormBorderStyle]::FixedDialog
     $dlg.MaximizeBox = $false; $dlg.MinimizeBox = $false; $dlg.ShowInTaskbar = $false
     $dlg.Font = New-Object System.Drawing.Font("Segoe UI", 9.5); $dlg.BackColor = $clrFormBg
 
+    # --- Appearance group ---
     $grpApp = New-Object System.Windows.Forms.GroupBox
     $grpApp.Text = "Appearance"; $grpApp.SetBounds(16, 12, 392, 60)
     $grpApp.Font = New-Object System.Drawing.Font("Segoe UI", 9, [System.Drawing.FontStyle]::Bold)
@@ -278,24 +311,60 @@ function Show-PreferencesDialog {
     if ($script:Prefs.DarkMode) { $chkDark.FlatStyle = [System.Windows.Forms.FlatStyle]::Flat; $chkDark.ForeColor = [System.Drawing.Color]::FromArgb(170, 170, 170) }
     $grpApp.Controls.Add($chkDark)
 
-    $btnSave = New-Object System.Windows.Forms.Button; $btnSave.Text = "Save"; $btnSave.SetBounds(220, 110, 90, 32)
+    # --- Modules group ---
+    $grpMod = New-Object System.Windows.Forms.GroupBox
+    $grpMod.Text = "Modules (requires restart)"; $grpMod.SetBounds(16, 82, 392, $moduleGroupHeight)
+    $grpMod.Font = New-Object System.Drawing.Font("Segoe UI", 9, [System.Drawing.FontStyle]::Bold)
+    $grpMod.ForeColor = $clrText; $grpMod.BackColor = $clrFormBg
+    if ($script:Prefs.DarkMode) { $grpMod.FlatStyle = [System.Windows.Forms.FlatStyle]::Flat; $grpMod.ForeColor = $clrSepLine }
+    $dlg.Controls.Add($grpMod)
+
+    $moduleChecks = @{}
+    $yPos = 24
+    foreach ($mod in $availableModules) {
+        $chk = New-Object System.Windows.Forms.CheckBox
+        $chk.Text = $mod.TabLabel
+        $chk.Font = New-Object System.Drawing.Font("Segoe UI", 9)
+        $chk.AutoSize = $true
+        $chk.Location = New-Object System.Drawing.Point(14, $yPos)
+        $chk.Checked = ($mod.Name -notin $script:Prefs.DisabledModules)
+        $chk.ForeColor = $clrText; $chk.BackColor = $clrFormBg
+        if ($script:Prefs.DarkMode) { $chk.FlatStyle = [System.Windows.Forms.FlatStyle]::Flat; $chk.ForeColor = [System.Drawing.Color]::FromArgb(170, 170, 170) }
+        $grpMod.Controls.Add($chk)
+        $moduleChecks[$mod.Name] = $chk
+        $yPos += $moduleRowHeight
+    }
+
+    # --- Buttons ---
+    $btnSave = New-Object System.Windows.Forms.Button; $btnSave.Text = "Save"; $btnSave.SetBounds(220, $btnY, 90, 32)
     $btnSave.Font = New-Object System.Drawing.Font("Segoe UI", 9); Set-ModernButtonStyle -Button $btnSave -BackColor $clrAccent
     $dlg.Controls.Add($btnSave)
-    $btnCancel = New-Object System.Windows.Forms.Button; $btnCancel.Text = "Cancel"; $btnCancel.SetBounds(318, 110, 90, 32)
+    $btnCancel = New-Object System.Windows.Forms.Button; $btnCancel.Text = "Cancel"; $btnCancel.SetBounds(318, $btnY, 90, 32)
     $btnCancel.Font = New-Object System.Drawing.Font("Segoe UI", 9); $btnCancel.FlatStyle = [System.Windows.Forms.FlatStyle]::Flat
     $btnCancel.ForeColor = $clrText; $btnCancel.BackColor = $clrFormBg
     $dlg.Controls.Add($btnCancel)
 
     $btnSave.Add_Click({
+        # Build disabled list from unchecked modules
+        $newDisabled = @()
+        foreach ($modName in $moduleChecks.Keys) {
+            if (-not $moduleChecks[$modName].Checked) { $newDisabled += $modName }
+        }
+
         $needsRestart = ($chkDark.Checked -ne $script:Prefs.DarkMode)
+        $oldDisabled = @($script:Prefs.DisabledModules | Sort-Object)
+        $newDisabledSorted = @($newDisabled | Sort-Object)
+        if (($oldDisabled -join ',') -ne ($newDisabledSorted -join ',')) { $needsRestart = $true }
+
         $script:Prefs.DarkMode = $chkDark.Checked
-        Save-MmcAltPreferences -Prefs $script:Prefs
+        $script:Prefs.DisabledModules = $newDisabled
+        Save-MmcIfPreferences -Prefs $script:Prefs
         $dlg.DialogResult = [System.Windows.Forms.DialogResult]::OK; $dlg.Close()
         if ($needsRestart) {
-            $result = [System.Windows.Forms.MessageBox]::Show("Theme change requires a restart. Restart now?", "Restart Required", [System.Windows.Forms.MessageBoxButtons]::YesNo, [System.Windows.Forms.MessageBoxIcon]::Question)
+            $result = [System.Windows.Forms.MessageBox]::Show("Changes require a restart. Restart now?", "Restart Required", [System.Windows.Forms.MessageBoxButtons]::YesNo, [System.Windows.Forms.MessageBoxIcon]::Question)
             if ($result -eq [System.Windows.Forms.DialogResult]::Yes) {
                 Save-WindowState
-                Start-Process powershell.exe -ArgumentList @('-ExecutionPolicy', 'Bypass', '-File', "`"$($MyInvocation.ScriptName)`"")
+                Start-Process powershell.exe -ArgumentList @('-ExecutionPolicy', 'Bypass', '-File', "`"$scriptFile`"")
                 $form.Close()
             }
         }
@@ -310,7 +379,7 @@ function Show-PreferencesDialog {
 # ---------------------------------------------------------------------------
 
 $form = New-Object System.Windows.Forms.Form
-$form.Text = "MMC-Alt"; $form.Size = New-Object System.Drawing.Size(1360, 900)
+$form.Text = "MMC-If"; $form.Size = New-Object System.Drawing.Size(1360, 900)
 $form.MinimumSize = New-Object System.Drawing.Size(1000, 650); $form.StartPosition = "CenterScreen"
 $form.Font = New-Object System.Drawing.Font("Segoe UI", 9.5); $form.BackColor = $clrFormBg
 
@@ -349,10 +418,10 @@ $menuStrip.Items.Add($menuFile) | Out-Null
 
 $menuHelp = New-Object System.Windows.Forms.ToolStripMenuItem("&Help")
 $menuHelp.ForeColor = $clrText
-$menuHelpAbout = New-Object System.Windows.Forms.ToolStripMenuItem("&About MMC-Alt...")
+$menuHelpAbout = New-Object System.Windows.Forms.ToolStripMenuItem("&About MMC-If...")
 $menuHelpAbout.ForeColor = $clrText
 $menuHelpAbout.Add_Click({
-    $aboutLines = @("MMC-Alt v1.0.0", "", "Plugin-based alternative to MMC-hosted Windows tools.", "")
+    $aboutLines = @("MMC-If v1.2.0", "", "Plugin-based alternative to MMC-hosted Windows tools.", "")
     # List loaded modules
     if ($script:LoadedModules.Count -gt 0) {
         $aboutLines += "Loaded modules:"
@@ -363,7 +432,7 @@ $menuHelpAbout.Add_Click({
         $aboutLines += "No modules loaded."
     }
     $aboutLines += "", "Copyright (c) 2026 Jason Ulbright", "MIT License"
-    [System.Windows.Forms.MessageBox]::Show(($aboutLines -join "`r`n"), "About MMC-Alt", [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Information) | Out-Null
+    [System.Windows.Forms.MessageBox]::Show(($aboutLines -join "`r`n"), "About MMC-If", [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Information) | Out-Null
 })
 $menuHelp.DropDownItems.Add($menuHelpAbout) | Out-Null
 $menuStrip.Items.Add($menuHelp) | Out-Null
@@ -429,6 +498,12 @@ if (Test-Path -LiteralPath $modulesDir) {
             # Validate required fields
             if (-not $manifest.Name -or -not $manifest.EntryScript -or -not $manifest.InitFunction) {
                 Write-Log "Skipping module in $($folder.Name): missing required fields in module.json" -Level WARN
+                continue
+            }
+
+            # Check if module is disabled in preferences
+            if ($manifest.Name -in $script:Prefs.DisabledModules) {
+                Write-Log "Skipping disabled module: $($manifest.Name)"
                 continue
             }
 

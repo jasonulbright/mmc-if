@@ -1,0 +1,8 @@
+{
+    "Name": "CertificateStore",
+    "TabLabel": "Certificates",
+    "Description": "Browse user and machine certificate stores. View expiry, thumbprints, and certificate details without certmgr.msc (mmc.exe).",
+    "Version": "1.0.0",
+    "EntryScript": "CertificateStore.ps1",
+    "InitFunction": "Initialize-CertificateStore"
+}

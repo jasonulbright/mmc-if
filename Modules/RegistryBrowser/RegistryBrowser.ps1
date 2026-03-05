@@ -1,6 +1,6 @@
-<#
+﻿<#
 .SYNOPSIS
-    Registry Browser module for MMC-Alt.
+    Registry Browser module for MMC-If.
 
 .DESCRIPTION
     Provides a regedit-like interface for browsing the Windows registry.

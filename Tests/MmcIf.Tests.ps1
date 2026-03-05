@@ -1,8 +1,8 @@
-#Requires -Modules Pester
+﻿#Requires -Modules Pester
 
 <#
 .SYNOPSIS
-    Pester tests for MMC-Alt shell and plugin modules.
+    Pester tests for MMC-If shell and plugin modules.
 #>
 
 # Paths available at discovery time (not inside BeforeAll)
@@ -11,7 +11,7 @@ $ModulesDir  = Join-Path $ProjectRoot 'Modules'
 
 BeforeAll {
     $script:ProjectRoot = Split-Path -Path $PSScriptRoot -Parent
-    $script:ModulePath  = Join-Path $script:ProjectRoot 'Module\MmcAltCommon.psd1'
+    $script:ModulePath  = Join-Path $script:ProjectRoot 'Module\MmcIfCommon.psd1'
     $script:ModulesDir  = Join-Path $script:ProjectRoot 'Modules'
     Import-Module $script:ModulePath -Force
 }
@@ -22,16 +22,16 @@ BeforeAll {
 
 Describe 'Script Parse Validation' {
 
-    It 'start-mmcalt.ps1 parses without errors' {
+    It 'start-mmcif.ps1 parses without errors' {
         $tokens = $null; $errors = $null
-        $path = Join-Path $script:ProjectRoot 'start-mmcalt.ps1'
+        $path = Join-Path $script:ProjectRoot 'start-mmcif.ps1'
         [System.Management.Automation.Language.Parser]::ParseFile($path, [ref]$tokens, [ref]$errors) | Out-Null
         $errors.Count | Should -Be 0
     }
 
     # Use discovery-time variable, iterate only module entry scripts
     $entryScripts = Get-ChildItem -Path $ModulesDir -Recurse -Filter '*.ps1' |
-        Where-Object { $_.DirectoryName -like "$ModulesDir*" -and $_.Name -ne 'MmcAlt.Tests.ps1' }
+        Where-Object { $_.DirectoryName -like "$ModulesDir*" -and $_.Name -ne 'MmcIf.Tests.ps1' }
 
     foreach ($s in $entryScripts) {
         It "$($s.Name) parses without errors" -TestCases @{ ScriptPath = $s.FullName } {
@@ -90,18 +90,18 @@ Describe 'Plugin Manifest Validation' {
 }
 
 # =========================================================================
-# Shared Module: MmcAltCommon
+# Shared Module: MmcIfCommon
 # =========================================================================
 
-Describe 'MmcAltCommon Module' {
+Describe 'MmcIfCommon Module' {
 
     It 'Module loads successfully' {
         { Import-Module $script:ModulePath -Force -ErrorAction Stop } | Should -Not -Throw
     }
 
     It 'Exports expected functions' {
-        $exported = (Get-Module MmcAltCommon).ExportedFunctions.Keys
-        $expected = @('Initialize-Logging', 'Write-Log', 'Get-RegistryHive', 'Format-RegistryValue', 'Get-RegistryValueTypeName', 'Export-MmcAltCsv', 'Export-MmcAltHtml')
+        $exported = (Get-Module MmcIfCommon).ExportedFunctions.Keys
+        $expected = @('Initialize-Logging', 'Write-Log', 'Get-RegistryHive', 'Format-RegistryValue', 'Get-RegistryValueTypeName', 'Export-MmcIfCsv', 'Export-MmcIfHtml')
         foreach ($fn in $expected) {
             $exported | Should -Contain $fn
         }
@@ -207,10 +207,10 @@ Describe 'Format-RegistryValue' {
 # Export Functions
 # =========================================================================
 
-Describe 'Export-MmcAltCsv' {
+Describe 'Export-MmcIfCsv' {
 
     BeforeAll {
-        $script:TestDir = Join-Path $env:TEMP "mmcalt-test-$(Get-Random)"
+        $script:TestDir = Join-Path $env:TEMP "mmcif-test-$(Get-Random)"
         New-Item -ItemType Directory -Path $script:TestDir -Force | Out-Null
         Initialize-Logging -LogPath (Join-Path $script:TestDir 'test.log')
     }
@@ -227,7 +227,7 @@ Describe 'Export-MmcAltCsv' {
         $row = $dt.NewRow(); $row["Name"] = "Other"; $row["Value"] = "456"; $dt.Rows.Add($row)
 
         $csvPath = Join-Path $script:TestDir 'test.csv'
-        Export-MmcAltCsv -DataTable $dt -OutputPath $csvPath
+        Export-MmcIfCsv -DataTable $dt -OutputPath $csvPath
 
         $csvPath | Should -Exist
         $imported = Import-Csv $csvPath
@@ -242,15 +242,15 @@ Describe 'Export-MmcAltCsv' {
         $row = $dt.NewRow(); $row["Col"] = "data"; $dt.Rows.Add($row)
 
         $nestedPath = Join-Path $script:TestDir 'sub\deep\test.csv'
-        Export-MmcAltCsv -DataTable $dt -OutputPath $nestedPath
+        Export-MmcIfCsv -DataTable $dt -OutputPath $nestedPath
         $nestedPath | Should -Exist
     }
 }
 
-Describe 'Export-MmcAltHtml' {
+Describe 'Export-MmcIfHtml' {
 
     BeforeAll {
-        $script:TestDir = Join-Path $env:TEMP "mmcalt-test-html-$(Get-Random)"
+        $script:TestDir = Join-Path $env:TEMP "mmcif-test-html-$(Get-Random)"
         New-Item -ItemType Directory -Path $script:TestDir -Force | Out-Null
         Initialize-Logging -LogPath (Join-Path $script:TestDir 'test.log')
     }
@@ -266,7 +266,7 @@ Describe 'Export-MmcAltHtml' {
         $row = $dt.NewRow(); $row["Name"] = "Item1"; $row["Count"] = "5"; $dt.Rows.Add($row)
 
         $htmlPath = Join-Path $script:TestDir 'report.html'
-        Export-MmcAltHtml -DataTable $dt -OutputPath $htmlPath -ReportTitle 'Test Report'
+        Export-MmcIfHtml -DataTable $dt -OutputPath $htmlPath -ReportTitle 'Test Report'
 
         $htmlPath | Should -Exist
         $html = Get-Content $htmlPath -Raw
@@ -283,7 +283,7 @@ Describe 'Export-MmcAltHtml' {
 Describe 'Logging' {
 
     BeforeAll {
-        $script:TestDir = Join-Path $env:TEMP "mmcalt-test-log-$(Get-Random)"
+        $script:TestDir = Join-Path $env:TEMP "mmcif-test-log-$(Get-Random)"
         New-Item -ItemType Directory -Path $script:TestDir -Force | Out-Null
     }
 
@@ -329,7 +329,7 @@ Describe 'Logging' {
 Describe 'Shell Script' {
 
     It 'Defines required helper functions' {
-        $content = Get-Content (Join-Path $script:ProjectRoot 'start-mmcalt.ps1') -Raw
+        $content = Get-Content (Join-Path $script:ProjectRoot 'start-mmcif.ps1') -Raw
         $content | Should -Match 'function\s+New-ThemedGrid'
         $content | Should -Match 'function\s+Set-ModernButtonStyle'
         $content | Should -Match 'function\s+Enable-DoubleBuffer'
@@ -337,13 +337,13 @@ Describe 'Shell Script' {
     }
 
     It 'Loads WinForms and Drawing assemblies' {
-        $content = Get-Content (Join-Path $script:ProjectRoot 'start-mmcalt.ps1') -Raw
+        $content = Get-Content (Join-Path $script:ProjectRoot 'start-mmcif.ps1') -Raw
         $content | Should -Match 'System\.Windows\.Forms'
         $content | Should -Match 'System\.Drawing'
     }
 
     It 'Scans Modules directory for plugins' {
-        $content = Get-Content (Join-Path $script:ProjectRoot 'start-mmcalt.ps1') -Raw
+        $content = Get-Content (Join-Path $script:ProjectRoot 'start-mmcif.ps1') -Raw
         $content | Should -Match 'module\.json'
     }
 }
@@ -381,5 +381,53 @@ Describe 'Closure Safety: no script-scope inside .GetNewClosure()' {
 
             $violations.Count | Should -Be 0 -Because '.GetNewClosure() creates a new module scope where script-scope resolves incorrectly'
         }
+    }
+}
+
+# =========================================================================
+# Module-specific prerequisite tests
+# =========================================================================
+
+Describe 'Services Module Prerequisites' {
+    It 'Win32_Service CIM class is accessible' {
+        { Get-CimInstance Win32_Service -ErrorAction Stop | Select-Object -First 1 } | Should -Not -Throw
+    }
+
+    It 'Returns expected properties' {
+        $svc = Get-CimInstance Win32_Service -ErrorAction Stop | Select-Object -First 1
+        $svc.PSObject.Properties.Name | Should -Contain 'Name'
+        $svc.PSObject.Properties.Name | Should -Contain 'DisplayName'
+        $svc.PSObject.Properties.Name | Should -Contain 'State'
+        $svc.PSObject.Properties.Name | Should -Contain 'StartMode'
+    }
+}
+
+Describe 'Certificate Store Module Prerequisites' {
+    It 'X509Store can open CurrentUser\My' {
+        $store = New-Object System.Security.Cryptography.X509Certificates.X509Store('My', 'CurrentUser')
+        { $store.Open([System.Security.Cryptography.X509Certificates.OpenFlags]::ReadOnly) } | Should -Not -Throw
+        $store.Close()
+    }
+
+    It 'X509Store can open LocalMachine\Root' {
+        $store = New-Object System.Security.Cryptography.X509Certificates.X509Store('Root', 'LocalMachine')
+        { $store.Open([System.Security.Cryptography.X509Certificates.OpenFlags]::ReadOnly) } | Should -Not -Throw
+        $store.Close()
+    }
+}
+
+Describe 'Users & Groups Module Prerequisites' {
+    It 'Get-LocalUser cmdlet is available and returns results' {
+        $users = Get-LocalUser -ErrorAction Stop
+        $users | Should -Not -BeNullOrEmpty
+    }
+
+    It 'Get-LocalGroup cmdlet is available and returns results' {
+        $groups = Get-LocalGroup -ErrorAction Stop
+        $groups | Should -Not -BeNullOrEmpty
+    }
+
+    It 'Get-LocalGroupMember works on Administrators group' {
+        { Get-LocalGroupMember -Group 'Administrators' -ErrorAction Stop } | Should -Not -Throw
     }
 }

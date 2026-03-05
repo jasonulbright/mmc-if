@@ -1,4 +1,4 @@
-# MMC-Alt
+# MMC-If
 
 Plugin-based PowerShell WinForms shell providing alternatives to Windows tools blocked by mmc.exe restrictions.
 
@@ -6,7 +6,7 @@ Plugin-based PowerShell WinForms shell providing alternatives to Windows tools b
 
 Many organizations block `mmc.exe` execution (via endpoint protection policies like SentinelOne), which disables every MMC-hosted tool: regedit, Event Viewer, Device Manager, and all MMC snap-ins. However, the underlying .NET APIs and WMI classes that these snap-ins wrap are fully accessible without elevation.
 
-MMC-Alt provides a modular GUI shell that loads plugin modules, each offering an alternative to a blocked tool.
+MMC-If provides a modular GUI shell that loads plugin modules, each offering an alternative to a blocked tool.
 
 ## Screenshots
 
@@ -62,12 +62,47 @@ Alternative file browser with admin-friendly defaults.
 - Navigate into archives as virtual folders
 - File attributes displayed as compact flags (H/S/R/A)
 
+### Services Manager
+
+View and manage Windows services without `services.msc`.
+
+- Full service listing via `Get-CimInstance Win32_Service`
+- Start, stop, and restart services with error handling
+- Color-coded status (Running=green, Stopped=red, Paused=orange)
+- Service detail panel with description, path, PID, and dependencies
+- Filter by name or display name
+- Context menu with export to CSV and HTML
+
+### Certificate Store Browser
+
+Browse local certificate stores without `certlm.msc` / `certmgr.msc`.
+
+- TreeView navigation for CurrentUser and LocalMachine store locations
+- Certificate enumeration via .NET `X509Store` (read-only)
+- Expiry color-coding: expired=red, within 30 days=orange
+- Detail panel with subject, issuer, serial, thumbprint, SAN, template, key usage
+- Graceful handling of access-denied stores
+- Context menu with thumbprint/subject copy, CSV and HTML export
+
+### Local Users & Groups
+
+View local users and groups without `lusrmgr.msc`.
+
+- Toggle between Users and Groups views via dropdown
+- Users: name, full name, enabled status, password last set, last logon
+- Groups: name, description, member count
+- Disabled user dimming, orphaned SID handling in group members
+- Detail panel with properties and group memberships/members
+- Filter, context menu with export to CSV and HTML
+
 ## Plugin Architecture
 
-MMC-Alt discovers modules from the `Modules/` folder at startup. Each module is a subfolder containing:
+MMC-If discovers modules from the `Modules/` folder at startup. Each module is a subfolder containing:
 
 - `module.json` -- plugin manifest (name, tab label, version, entry script)
 - Entry script (`.ps1`) -- defines an initialization function that builds UI on a provided TabPage
+
+Modules can be enabled or disabled via File > Preferences without removing files.
 
 To add a new module, create a new folder under `Modules/` with these files.
 
@@ -89,12 +124,14 @@ No admin rights, no MECM console, and no mmc.exe required.
 
 2. Launch the GUI:
    ```powershell
-   .\start-mmcalt.ps1
+   .\start-mmcif.ps1
    ```
 
-3. All discovered modules load as tabs: Registry, Event Logs, Device Info, File Explorer.
+3. All enabled modules load as tabs: Registry, Event Logs, Device Info, File Explorer, Services, Certificates, Users & Groups.
 
 4. To edit HKCU registry values, right-click a key or value for context menu options.
+
+5. To disable modules, go to File > Preferences and uncheck unwanted modules.
 
 ## Keyboard Shortcuts
 

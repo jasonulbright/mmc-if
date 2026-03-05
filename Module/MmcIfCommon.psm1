@@ -1,16 +1,16 @@
-<#
+﻿<#
 .SYNOPSIS
-    Shared module for MMC-Alt plugin shell.
+    Shared module for MMC-If plugin shell.
 
 .DESCRIPTION
     Provides:
       - Structured logging (Initialize-Logging, Write-Log)
       - Registry helper functions (Get-RegistryHive, Format-RegistryValue, Get-RegistryValueTypeName)
-      - Export to CSV and HTML (Export-MmcAltCsv, Export-MmcAltHtml)
+      - Export to CSV and HTML (Export-MmcIfCsv, Export-MmcIfHtml)
 
 .EXAMPLE
-    Import-Module "$PSScriptRoot\Module\MmcAltCommon.psd1" -Force
-    Initialize-Logging -LogPath "C:\projects\mmcalt\Logs\mmcalt.log"
+    Import-Module "$PSScriptRoot\Module\MmcIfCommon.psd1" -Force
+    Initialize-Logging -LogPath "C:\projects\mmcif\Logs\mmcif.log"
 #>
 
 # ---------------------------------------------------------------------------
@@ -163,7 +163,7 @@ function Format-RegistryValue {
 # Export
 # ---------------------------------------------------------------------------
 
-function Export-MmcAltCsv {
+function Export-MmcIfCsv {
     <#
     .SYNOPSIS
         Exports a DataTable to CSV.
@@ -191,7 +191,7 @@ function Export-MmcAltCsv {
     Write-Log "Exported CSV to $OutputPath"
 }
 
-function Export-MmcAltHtml {
+function Export-MmcIfHtml {
     <#
     .SYNOPSIS
         Exports a DataTable to a self-contained HTML report.
@@ -199,7 +199,7 @@ function Export-MmcAltHtml {
     param(
         [Parameter(Mandatory)][System.Data.DataTable]$DataTable,
         [Parameter(Mandatory)][string]$OutputPath,
-        [string]$ReportTitle = 'MMC-Alt Report'
+        [string]$ReportTitle = 'MMC-If Report'
     )
 
     $parentDir = Split-Path -Path $OutputPath -Parent

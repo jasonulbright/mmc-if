@@ -1,6 +1,6 @@
-<#
+﻿<#
 .SYNOPSIS
-    File Explorer module for MMC-Alt.
+    File Explorer module for MMC-If.
 
 .DESCRIPTION
     Admin-oriented file browser that shows hidden files and file extensions by default,

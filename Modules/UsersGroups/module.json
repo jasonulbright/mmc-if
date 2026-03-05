@@ -1,0 +1,8 @@
+{
+    "Name": "UsersGroups",
+    "TabLabel": "Users & Groups",
+    "Description": "View local user accounts and group memberships. Check locked/disabled status without lusrmgr.msc (mmc.exe).",
+    "Version": "1.0.0",
+    "EntryScript": "UsersGroups.ps1",
+    "InitFunction": "Initialize-UsersGroups"
+}

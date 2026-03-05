@@ -1,6 +1,22 @@
 # Changelog
 
-All notable changes to MMC-Alt are documented in this file.
+All notable changes to MMC-If are documented in this file.
+
+## [1.2.0] - 2026-03-04
+
+### Added
+- **Services Manager module** -- view, start, stop, restart Windows services via `Win32_Service`; color-coded status (Running/Stopped/Paused), dependency detail panel, filter, CSV/HTML export
+- **Certificate Store Browser module** -- browse CurrentUser and LocalMachine certificate stores via .NET `X509Store`; TreeView navigation, expiry color-coding, SAN/template extraction, thumbprint copy
+- **Local Users & Groups module** -- view local users and groups via `Get-LocalUser`/`Get-LocalGroup`; toggle between Users/Groups views, disabled user dimming, group membership detail, orphaned SID handling
+- **Module enable/disable** -- Preferences dialog now lists all discovered modules with checkboxes; disabled modules are skipped at startup; changes require restart
+- 7 prerequisite Pester tests for new modules (Win32_Service, X509Store, Get-LocalUser/Get-LocalGroup/Get-LocalGroupMember)
+
+### Fixed
+- Dark mode restart now captures script path at function scope (`$scriptFile`) instead of relying on `$PSCommandPath` which is unavailable inside event handler scriptblocks
+- CertificateStore SplitContainer MinSize deferred to SizeChanged handler to prevent "SplitterDistance must be between Panel1MinSize and Width - Panel2MinSize" error on nested splits
+
+### Changed
+- Renamed from MMC-Alt to MMC-If
 
 ## [1.1.0] - 2026-03-04
 

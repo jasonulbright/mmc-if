@@ -1,6 +1,6 @@
-<#
+﻿<#
 .SYNOPSIS
-    Event Log Viewer module for MMC-Alt.
+    Event Log Viewer module for MMC-If.
 
 .DESCRIPTION
     Browse and filter Windows event logs using Get-WinEvent.
@@ -311,7 +311,7 @@ function Initialize-EventLogViewer {
                 $row = $evtEvents.NewRow()
                 $row["Level"] = "Error"
                 $row["Date/Time"] = (Get-Date).ToString("yyyy-MM-dd HH:mm:ss")
-                $row["Source"] = "MMC-Alt"
+                $row["Source"] = "MMC-If"
                 $row["Event ID"] = "0"
                 $row["Message"] = "Access denied reading $logName log. Security log typically requires admin or Event Log Readers group membership."
                 $row["_RawLevel"] = 2

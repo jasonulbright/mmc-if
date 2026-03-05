@@ -1,6 +1,6 @@
-<#
+﻿<#
 .SYNOPSIS
-    Device Info module for MMC-Alt.
+    Device Info module for MMC-If.
 
 .DESCRIPTION
     View system hardware and device information via WMI/CIM classes.
