@@ -1,0 +1,9 @@
+{
+    "Name": "Networking",
+    "TabLabel": "Networking",
+    "Description": "View network adapters, IP config, DNS. Ping and tracert actions. Read-only - no adapter enable/disable, no DHCP release/renew.",
+    "Version": "1.0.0",
+    "UI": "WPF",
+    "EntryScript": "Networking.ps1",
+    "InitFunction": "New-NetworkingView"
+}

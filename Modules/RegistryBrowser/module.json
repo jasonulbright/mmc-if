@@ -1,0 +1,9 @@
+{
+    "Name": "RegistryBrowser",
+    "TabLabel": "Registry",
+    "Description": "Browse the Windows registry. Read-only for HKLM/HKCR/HKU/HKCC; read-write for HKCU. No UAC elevation. Supports .reg export (any hive), .reg import (HKCU only, with preview), and persistent favorites.",
+    "Version": "1.0.0",
+    "UI": "WPF",
+    "EntryScript": "RegistryBrowser.ps1",
+    "InitFunction": "New-RegistryBrowserView"
+}

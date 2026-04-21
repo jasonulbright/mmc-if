@@ -1,0 +1,112 @@
+<UserControl
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro">
+
+    <DockPanel>
+        <!-- Address bar -->
+        <Border DockPanel.Dock="Top" Padding="8,6,8,6"
+                Background="{DynamicResource MahApps.Brushes.Gray10}">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="Path:" VerticalAlignment="Center" Margin="2,0,6,0" Grid.Column="0"/>
+                <TextBox x:Name="txtPath" Grid.Column="1"
+                         VerticalAlignment="Center" VerticalContentAlignment="Center"
+                         FontFamily="Cascadia Code, Consolas"
+                         Controls:TextBoxHelper.Watermark="HKCU, HKLM\Software, etc."/>
+                <Button Controls:ControlsHelper.ContentCharacterCasing="Normal" x:Name="btnGo" Grid.Column="2" Content="Go"
+                        MinWidth="54" Margin="6,0,0,0"
+                        Style="{DynamicResource MahApps.Styles.Button.Square.Accent}"/>
+                <Button Controls:ControlsHelper.ContentCharacterCasing="Normal" x:Name="btnFind" Grid.Column="3" Content="Find..."
+                        MinWidth="72" Margin="6,0,0,0"
+                        Style="{DynamicResource MahApps.Styles.Button.Square}"
+                        ToolTip="Search keys, values, data (Ctrl+F)"/>
+                <Button Controls:ControlsHelper.ContentCharacterCasing="Normal" x:Name="btnFavorites" Grid.Column="4" Content="Favorites"
+                        MinWidth="90" Margin="6,0,0,0"
+                        Style="{DynamicResource MahApps.Styles.Button.Square}"
+                        ToolTip="Saved registry locations">
+                    <Button.ContextMenu>
+                        <ContextMenu x:Name="favMenu" Placement="Bottom">
+                            <MenuItem x:Name="mnuFavAdd" Header="Add Current..."/>
+                            <MenuItem x:Name="mnuFavManage" Header="Manage..."/>
+                            <Separator x:Name="mnuFavSep"/>
+                        </ContextMenu>
+                    </Button.ContextMenu>
+                </Button>
+            </Grid>
+        </Border>
+
+        <!-- Main split: tree left, values grid right -->
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="300" MinWidth="150"/>
+                <ColumnDefinition Width="5"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <TreeView x:Name="treeReg" Grid.Column="0"
+                      BorderThickness="0"
+                      FontFamily="Segoe UI">
+                <TreeView.ContextMenu>
+                    <ContextMenu x:Name="treeMenu">
+                        <MenuItem x:Name="mnuTreeCopyPath" Header="Copy Key Path"/>
+                        <MenuItem x:Name="mnuTreeRefresh" Header="Refresh"/>
+                        <Separator x:Name="mnuTreeSep"/>
+                        <MenuItem x:Name="mnuTreeNewKey" Header="New Key"/>
+                        <MenuItem x:Name="mnuTreeDeleteKey" Header="Delete Key"/>
+                        <Separator x:Name="mnuTreeSep2"/>
+                        <MenuItem x:Name="mnuTreeExport" Header="Export..."/>
+                        <MenuItem x:Name="mnuTreeImport" Header="Import..."/>
+                        <Separator x:Name="mnuTreeSep3"/>
+                        <MenuItem x:Name="mnuTreeAddFav" Header="Add to Favorites..."/>
+                    </ContextMenu>
+                </TreeView.ContextMenu>
+            </TreeView>
+
+            <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch"
+                          Background="{DynamicResource MahApps.Brushes.Gray8}"/>
+
+            <DataGrid x:Name="gridValues" Grid.Column="2"
+                      AutoGenerateColumns="False"
+                      CanUserAddRows="False"
+                      CanUserDeleteRows="False"
+                      IsReadOnly="True"
+                      SelectionMode="Single"
+                      SelectionUnit="FullRow"
+                      GridLinesVisibility="Horizontal"
+                      HeadersVisibility="Column"
+                      RowHeaderWidth="0"
+                      BorderThickness="0"
+                      ColumnHeaderHeight="30">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Name" Width="220" Binding="{Binding Name}"/>
+                    <DataGridTextColumn Header="Type" Width="130" Binding="{Binding TypeName}"/>
+                    <DataGridTextColumn Header="Data" Width="*"   Binding="{Binding DisplayData}"/>
+                </DataGrid.Columns>
+                <DataGrid.ContextMenu>
+                    <ContextMenu x:Name="valuesMenu">
+                        <MenuItem x:Name="mnuValCopyName" Header="Copy Value Name"/>
+                        <MenuItem x:Name="mnuValCopyData" Header="Copy Value Data"/>
+                        <Separator x:Name="mnuValSep"/>
+                        <MenuItem x:Name="mnuValNew" Header="New">
+                            <MenuItem x:Name="mnuValNewString"       Header="String Value"       Tag="String"/>
+                            <MenuItem x:Name="mnuValNewDWord"        Header="DWORD (32-bit)"     Tag="DWord"/>
+                            <MenuItem x:Name="mnuValNewQWord"        Header="QWORD (64-bit)"     Tag="QWord"/>
+                            <MenuItem x:Name="mnuValNewBinary"       Header="Binary Value"       Tag="Binary"/>
+                            <MenuItem x:Name="mnuValNewMultiString"  Header="Multi-String Value" Tag="MultiString"/>
+                            <MenuItem x:Name="mnuValNewExpandString" Header="Expandable String"  Tag="ExpandString"/>
+                        </MenuItem>
+                        <MenuItem x:Name="mnuValModify" Header="Modify..."/>
+                        <MenuItem x:Name="mnuValDelete" Header="Delete"/>
+                    </ContextMenu>
+                </DataGrid.ContextMenu>
+            </DataGrid>
+        </Grid>
+    </DockPanel>
+</UserControl>

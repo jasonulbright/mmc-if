@@ -1,0 +1,9 @@
+{
+    "Name": "TaskScheduler",
+    "TabLabel": "Task Scheduler",
+    "Description": "Browse scheduled tasks - triggers, actions, conditions, and run history. Read-only.",
+    "Version": "1.0.0",
+    "UI": "WPF",
+    "EntryScript": "TaskScheduler.ps1",
+    "InitFunction": "New-TaskSchedulerView"
+}

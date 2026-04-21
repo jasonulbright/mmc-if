@@ -1,0 +1,9 @@
+{
+    "Name": "Services",
+    "TabLabel": "Services",
+    "Description": "View and control Windows services. Start/stop/restart where user permissions allow.",
+    "Version": "1.0.0",
+    "UI": "WPF",
+    "EntryScript": "Services.ps1",
+    "InitFunction": "New-ServicesView"
+}

@@ -1,0 +1,9 @@
+{
+    "Name": "DeviceInfo",
+    "TabLabel": "Device Info",
+    "Description": "View hardware and device information via CIM/WMI. Read-only.",
+    "Version": "1.0.0",
+    "UI": "WPF",
+    "EntryScript": "DeviceInfo.ps1",
+    "InitFunction": "New-DeviceInfoView"
+}

@@ -1,0 +1,9 @@
+{
+    "Name": "FileExplorer",
+    "TabLabel": "File Explorer",
+    "Description": "Admin-oriented file browser with hidden files, extensions, and 7-Zip archive browsing. Read-only.",
+    "Version": "1.0.0",
+    "UI": "WPF",
+    "EntryScript": "FileExplorer.ps1",
+    "InitFunction": "New-FileExplorerView"
+}

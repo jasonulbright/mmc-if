@@ -1,0 +1,9 @@
+{
+    "Name": "UsersGroups",
+    "TabLabel": "Users & Groups",
+    "Description": "View local users and groups. Read-only.",
+    "Version": "1.0.0",
+    "UI": "WPF",
+    "EntryScript": "UsersGroups.ps1",
+    "InitFunction": "New-UsersGroupsView"
+}
