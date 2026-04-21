@@ -64,10 +64,12 @@
                 <Setter Property="BorderThickness" Value="1"/>
             </Style>
 
+            <!-- Section header: Gray1 is theme-adaptive (#F9F9F9 dark, #333333 light);
+                 Gray2 is static #7F7F7F and fails WCAG AA (3.83:1 / 4.00:1). -->
             <Style x:Key="SectionHeaderStyle" TargetType="TextBlock">
                 <Setter Property="FontSize" Value="11"/>
                 <Setter Property="FontWeight" Value="SemiBold"/>
-                <Setter Property="Foreground" Value="{DynamicResource MahApps.Brushes.Gray2}"/>
+                <Setter Property="Foreground" Value="{DynamicResource MahApps.Brushes.Gray1}"/>
                 <Setter Property="Margin" Value="12,14,0,6"/>
             </Style>
         </ResourceDictionary>
@@ -86,7 +88,7 @@
                 <StackPanel DockPanel.Dock="Top" Margin="14,14,14,0">
                     <TextBlock x:Name="txtAppTitle" Text="MMC-If" FontSize="20" FontWeight="Bold"/>
                     <TextBlock x:Name="txtAppVersion" Text="" FontSize="10"
-                               Foreground="{DynamicResource MahApps.Brushes.Gray5}" Margin="0,2,0,0"/>
+                               Foreground="{DynamicResource MahApps.Brushes.Gray1}" Margin="0,2,0,0"/>
                 </StackPanel>
 
                 <StackPanel DockPanel.Dock="Bottom" Margin="14,0,14,14">
@@ -147,7 +149,7 @@
                     <TextBlock x:Name="txtModuleTitle" Text="Welcome" FontSize="18" FontWeight="SemiBold"/>
                     <TextBlock x:Name="txtModuleSubtitle" Text="Select a tool from the sidebar to begin."
                                FontSize="11"
-                               Foreground="{DynamicResource MahApps.Brushes.Gray5}"
+                               Foreground="{DynamicResource MahApps.Brushes.Gray1}"
                                Margin="0,2,0,0"/>
                 </StackPanel>
             </Border>
@@ -163,9 +165,8 @@
             <!-- Log output drawer -->
             <Border Grid.Row="3">
                 <DockPanel>
-                    <TextBlock DockPanel.Dock="Top" Text="LOG OUTPUT"
+                    <TextBlock x:Name="lblLogOutput" DockPanel.Dock="Top" Text="LOG OUTPUT"
                                FontSize="10" FontWeight="SemiBold"
-                               Foreground="#B0B0B0"
                                Margin="8,6,0,4"/>
                     <TextBox x:Name="txtLog"
                              IsReadOnly="True"

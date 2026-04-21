@@ -22,7 +22,7 @@
 
     ScriptName : start-mmcif.ps1
     Purpose    : WPF shell for MMC alternative tools
-    Version    : 1.0.0
+    Version    : 1.0.1
     Updated    : 2026-04-17
 #>
 
@@ -141,6 +141,7 @@ $txtModuleTitle   = Get-Control 'txtModuleTitle'
 $txtModuleSubtitle = Get-Control 'txtModuleSubtitle'
 $contentHost      = Get-Control 'contentHost'
 $txtLog           = Get-Control 'txtLog'
+$lblLogOutput     = Get-Control 'lblLogOutput'
 $txtStatus        = Get-Control 'txtStatus'
 $toggleTheme      = Get-Control 'toggleTheme'
 
@@ -295,6 +296,11 @@ $script:LightButtonBorder    = [System.Windows.Media.BrushConverter]::new().Conv
 $script:TitleBarBlue         = [System.Windows.Media.BrushConverter]::new().ConvertFrom('#0078D4')
 $script:TitleBarBlueInactive = [System.Windows.Media.BrushConverter]::new().ConvertFrom('#4BA3E0')
 
+# LOG OUTPUT label Foreground: dark-only #B0B0B0 was invisible on light bg
+# (2.17:1). Apply per theme so both pass AA. See reference_srl_wpf_brand.md.
+$script:LogLabelDark  = [System.Windows.Media.BrushConverter]::new().ConvertFrom('#B0B0B0')
+$script:LogLabelLight = [System.Windows.Media.BrushConverter]::new().ConvertFrom('#595959')
+
 $script:SidebarButtons = @(
     'btnRegistry','btnEventLogs','btnDeviceInfo','btnFiles','btnServices',
     'btnCertificates','btnUsersGroups','btnTaskScheduler','btnNetworking',
@@ -322,6 +328,11 @@ $script:ApplyTheme = {
     } else {
         $window.WindowTitleBrush          = $script:TitleBarBlue
         $window.NonActiveWindowTitleBrush = $script:TitleBarBlueInactive
+    }
+
+    # LOG OUTPUT label needs a per-theme Foreground to stay AA-compliant.
+    if ($lblLogOutput) {
+        $lblLogOutput.Foreground = if ($IsDark) { $script:LogLabelDark } else { $script:LogLabelLight }
     }
 
     # Any currently-loaded module's UserControl also needs the theme applied so
@@ -393,7 +404,7 @@ function Show-MmcIfPreferencesDialog {
         <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="4,0,0,16">
             <Controls:ToggleSwitch x:Name="togDark" Header="Dark theme" OnContent="On" OffContent="Off" VerticalAlignment="Center"/>
             <TextBlock Text="(applied on OK)" Margin="10,0,0,0" VerticalAlignment="Center"
-                       Foreground="{DynamicResource MahApps.Brushes.Gray5}"/>
+                       Foreground="{DynamicResource MahApps.Brushes.Gray1}"/>
         </StackPanel>
 
         <!-- Favorites -->
@@ -428,11 +439,11 @@ function Show-MmcIfPreferencesDialog {
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
-                <TextBlock Grid.Row="0" Grid.Column="0" Text="Version:"      Foreground="{DynamicResource MahApps.Brushes.Gray5}" Margin="4,0,0,4"/>
+                <TextBlock Grid.Row="0" Grid.Column="0" Text="Version:"      Foreground="{DynamicResource MahApps.Brushes.Gray1}" Margin="4,0,0,4"/>
                 <TextBlock Grid.Row="0" Grid.Column="1" x:Name="txtVersion"  Margin="0,0,0,4" FontFamily="Cascadia Code, Consolas"/>
-                <TextBlock Grid.Row="1" Grid.Column="0" Text="Prefs file:"   Foreground="{DynamicResource MahApps.Brushes.Gray5}" Margin="4,0,0,4"/>
+                <TextBlock Grid.Row="1" Grid.Column="0" Text="Prefs file:"   Foreground="{DynamicResource MahApps.Brushes.Gray1}" Margin="4,0,0,4"/>
                 <TextBlock Grid.Row="1" Grid.Column="1" x:Name="txtPrefsPath" Margin="0,0,0,4" FontFamily="Cascadia Code, Consolas" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis"/>
-                <TextBlock Grid.Row="2" Grid.Column="0" Text="Log folder:"   Foreground="{DynamicResource MahApps.Brushes.Gray5}" Margin="4,0,0,4"/>
+                <TextBlock Grid.Row="2" Grid.Column="0" Text="Log folder:"   Foreground="{DynamicResource MahApps.Brushes.Gray1}" Margin="4,0,0,4"/>
                 <TextBlock Grid.Row="2" Grid.Column="1" x:Name="txtLogFolder" Margin="0,0,0,4" FontFamily="Cascadia Code, Consolas" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis"/>
                 <StackPanel Grid.Row="3" Grid.Column="1" Orientation="Horizontal" Margin="0,8,0,0">
                     <Button Controls:ControlsHelper.ContentCharacterCasing="Normal" x:Name="btnOpenLog"
