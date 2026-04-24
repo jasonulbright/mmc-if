@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.0.2] - 2026-04-24
+
+- Sidebar pressed-state fix: replaced the MahApps `Square` button template with a custom `SidebarButtonTemplate` that shade-lifts to `#3A3A3A` on press instead of inverting colors via the default Visual State Manager. The default template made white button text invisible during the brief press flash on the dark sidebar; the new template keeps `Foreground=White` constant and only swaps the background.
+- Tooltips added to every sidebar button (Registry, Event Logs, Device Info, Files, Services, Certificates, Users & Groups, Task Scheduler, Networking, Disks, Group Policy) and the dark/light theme toggle. Each tooltip is a one-line description of what the module does.
+
 ## [1.0.1] - 2026-04-21
 
 - Minor UI adjustments for WCAG AA contrast compliance
