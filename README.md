@@ -35,25 +35,6 @@ Module examples:
 
 **Optional:** [7-Zip](https://www.7-zip.org/) installed for archive browsing in the File Explorer module.
 
-## Setup
-
-1. Clone the repository:
-   ```
-   git clone https://github.com/jasonulbright/mmc-if.git
-   ```
-
-2. Open PowerShell and navigate to the project directory:
-   ```powershell
-   cd mmc-if
-   ```
-
-3. Launch the shell:
-   ```powershell
-   .\start-mmcif.ps1
-   ```
-
-No install step. The shell loads modules from the `Modules/` folder automatically.
-
 ## Modules
 
 ### Registry Browser
