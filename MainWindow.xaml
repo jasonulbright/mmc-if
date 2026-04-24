@@ -134,7 +134,8 @@
                                                IsOn="True"
                                                OnContent="" OffContent=""
                                                Margin="0,0,0,0"
-                                               MinWidth="0"/>
+                                               MinWidth="0"
+                                               ToolTip="Toggle dark / light theme"/>
                     </DockPanel>
                 </StackPanel>
 
@@ -142,19 +143,19 @@
                     <StackPanel>
 
                         <TextBlock Text="TOOLS" Style="{StaticResource SectionHeaderStyle}"/>
-                        <Button Controls:ControlsHelper.ContentCharacterCasing="Normal" x:Name="btnRegistry"      Content="Registry"        Style="{StaticResource ModuleButtonStyle}" Tag="RegistryBrowser"/>
-                        <Button Controls:ControlsHelper.ContentCharacterCasing="Normal" x:Name="btnEventLogs"     Content="Event Logs"      Style="{StaticResource ModuleButtonStyle}" Tag="EventLogViewer"/>
-                        <Button Controls:ControlsHelper.ContentCharacterCasing="Normal" x:Name="btnDeviceInfo"    Content="Device Info"     Style="{StaticResource ModuleButtonStyle}" Tag="DeviceInfo"/>
-                        <Button Controls:ControlsHelper.ContentCharacterCasing="Normal" x:Name="btnFiles"         Content="Files"           Style="{StaticResource ModuleButtonStyle}" Tag="FileExplorer"/>
-                        <Button Controls:ControlsHelper.ContentCharacterCasing="Normal" x:Name="btnServices"      Content="Services"        Style="{StaticResource ModuleButtonStyle}" Tag="Services"/>
-                        <Button Controls:ControlsHelper.ContentCharacterCasing="Normal" x:Name="btnCertificates"  Content="Certificates"    Style="{StaticResource ModuleButtonStyle}" Tag="CertificateStore"/>
-                        <Button Controls:ControlsHelper.ContentCharacterCasing="Normal" x:Name="btnUsersGroups"   Content="Users &amp; Groups" Style="{StaticResource ModuleButtonStyle}" Tag="UsersGroups"/>
+                        <Button Controls:ControlsHelper.ContentCharacterCasing="Normal" x:Name="btnRegistry"      Content="Registry"        Style="{StaticResource ModuleButtonStyle}" Tag="RegistryBrowser"    ToolTip="Browse remote registry hives"/>
+                        <Button Controls:ControlsHelper.ContentCharacterCasing="Normal" x:Name="btnEventLogs"     Content="Event Logs"      Style="{StaticResource ModuleButtonStyle}" Tag="EventLogViewer"     ToolTip="Browse Windows event logs"/>
+                        <Button Controls:ControlsHelper.ContentCharacterCasing="Normal" x:Name="btnDeviceInfo"    Content="Device Info"     Style="{StaticResource ModuleButtonStyle}" Tag="DeviceInfo"         ToolTip="Inspect system and hardware details"/>
+                        <Button Controls:ControlsHelper.ContentCharacterCasing="Normal" x:Name="btnFiles"         Content="Files"           Style="{StaticResource ModuleButtonStyle}" Tag="FileExplorer"       ToolTip="Browse the remote file system"/>
+                        <Button Controls:ControlsHelper.ContentCharacterCasing="Normal" x:Name="btnServices"      Content="Services"        Style="{StaticResource ModuleButtonStyle}" Tag="Services"           ToolTip="Manage Windows services"/>
+                        <Button Controls:ControlsHelper.ContentCharacterCasing="Normal" x:Name="btnCertificates"  Content="Certificates"    Style="{StaticResource ModuleButtonStyle}" Tag="CertificateStore"   ToolTip="Browse installed certificate stores"/>
+                        <Button Controls:ControlsHelper.ContentCharacterCasing="Normal" x:Name="btnUsersGroups"   Content="Users &amp; Groups" Style="{StaticResource ModuleButtonStyle}" Tag="UsersGroups"        ToolTip="Manage local users and groups"/>
 
                         <TextBlock Text="NEW IN 1.0" Style="{StaticResource SectionHeaderStyle}"/>
-                        <Button Controls:ControlsHelper.ContentCharacterCasing="Normal" x:Name="btnTaskScheduler" Content="Task Scheduler"  Style="{StaticResource ModuleButtonStyle}" Tag="TaskScheduler"/>
-                        <Button Controls:ControlsHelper.ContentCharacterCasing="Normal" x:Name="btnNetworking"    Content="Networking"      Style="{StaticResource ModuleButtonStyle}" Tag="Networking"/>
-                        <Button Controls:ControlsHelper.ContentCharacterCasing="Normal" x:Name="btnDisks"         Content="Disks"           Style="{StaticResource ModuleButtonStyle}" Tag="Disks"/>
-                        <Button Controls:ControlsHelper.ContentCharacterCasing="Normal" x:Name="btnGroupPolicy"   Content="Group Policy"    Style="{StaticResource ModuleButtonStyle}" Tag="GroupPolicy"/>
+                        <Button Controls:ControlsHelper.ContentCharacterCasing="Normal" x:Name="btnTaskScheduler" Content="Task Scheduler"  Style="{StaticResource ModuleButtonStyle}" Tag="TaskScheduler"      ToolTip="Browse scheduled tasks"/>
+                        <Button Controls:ControlsHelper.ContentCharacterCasing="Normal" x:Name="btnNetworking"    Content="Networking"      Style="{StaticResource ModuleButtonStyle}" Tag="Networking"         ToolTip="Inspect network adapters and configuration"/>
+                        <Button Controls:ControlsHelper.ContentCharacterCasing="Normal" x:Name="btnDisks"         Content="Disks"           Style="{StaticResource ModuleButtonStyle}" Tag="Disks"              ToolTip="Inspect disk volumes and partitions"/>
+                        <Button Controls:ControlsHelper.ContentCharacterCasing="Normal" x:Name="btnGroupPolicy"   Content="Group Policy"    Style="{StaticResource ModuleButtonStyle}" Tag="GroupPolicy"        ToolTip="Run gpresult and inspect applied GPOs"/>
 
                     </StackPanel>
                 </ScrollViewer>
