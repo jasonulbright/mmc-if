@@ -1,0 +1,9 @@
+{
+    "Name": "CertificateStore",
+    "TabLabel": "Certificates",
+    "Description": "Browse CurrentUser and LocalMachine certificate stores. Read-only.",
+    "Version": "1.0.0",
+    "UI": "WPF",
+    "EntryScript": "CertificateStore.ps1",
+    "InitFunction": "New-CertificateStoreView"
+}

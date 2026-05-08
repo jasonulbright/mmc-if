@@ -1,0 +1,117 @@
+<UserControl
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro">
+
+    <DockPanel>
+        <Border DockPanel.Dock="Top" Padding="8,6,8,6"
+                Background="{DynamicResource MahApps.Brushes.Gray10}">
+            <StackPanel Orientation="Horizontal">
+                <Button Controls:ControlsHelper.ContentCharacterCasing="Normal" x:Name="btnRefresh" Content="Refresh"
+                        MinWidth="80" Padding="8,4,8,4"
+                        Style="{DynamicResource MahApps.Styles.Button.Square.Accent}"/>
+                <TextBlock Text="Physical disks, partitions, and volumes. Read-only - no partition operations."
+                           VerticalAlignment="Center" Margin="14,0,0,0"
+                           Foreground="{DynamicResource MahApps.Brushes.Gray3}" FontSize="11"/>
+            </StackPanel>
+        </Border>
+
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="5"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="5"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <!-- Physical disks -->
+            <Border Grid.Row="0" Margin="4" BorderBrush="{DynamicResource MahApps.Brushes.Gray8}" BorderThickness="0,0,0,1">
+                <DockPanel>
+                    <TextBlock DockPanel.Dock="Top" Text="PHYSICAL DISKS"
+                               FontSize="11" FontWeight="SemiBold"
+                               Foreground="{DynamicResource MahApps.Brushes.Gray3}"
+                               Margin="8,6,0,4"/>
+                    <DataGrid x:Name="gridDisks"
+                              AutoGenerateColumns="False"
+                              CanUserAddRows="False" CanUserDeleteRows="False"
+                              IsReadOnly="True"
+                              SelectionMode="Single" SelectionUnit="FullRow"
+                              GridLinesVisibility="Horizontal" HeadersVisibility="Column"
+                              RowHeaderWidth="0" BorderThickness="0" ColumnHeaderHeight="28">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="#"              Width="40"  Binding="{Binding Number}"/>
+                            <DataGridTextColumn Header="Friendly Name"  Width="260" Binding="{Binding FriendlyName}"/>
+                            <DataGridTextColumn Header="Size"           Width="100" Binding="{Binding SizeText}"/>
+                            <DataGridTextColumn Header="Partition Style" Width="120" Binding="{Binding PartitionStyle}"/>
+                            <DataGridTextColumn Header="Bus Type"       Width="100" Binding="{Binding BusType}"/>
+                            <DataGridTextColumn Header="Health"         Width="90"  Binding="{Binding HealthStatus}"/>
+                            <DataGridTextColumn Header="Serial"         Width="*"   Binding="{Binding SerialNumber}"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </DockPanel>
+            </Border>
+
+            <GridSplitter Grid.Row="1" HorizontalAlignment="Stretch"
+                          Background="{DynamicResource MahApps.Brushes.Gray8}"/>
+
+            <!-- Partitions -->
+            <Border Grid.Row="2" Margin="4">
+                <DockPanel>
+                    <TextBlock DockPanel.Dock="Top" Text="PARTITIONS"
+                               FontSize="11" FontWeight="SemiBold"
+                               Foreground="{DynamicResource MahApps.Brushes.Gray3}"
+                               Margin="8,6,0,4"/>
+                    <DataGrid x:Name="gridPartitions"
+                              AutoGenerateColumns="False"
+                              CanUserAddRows="False" CanUserDeleteRows="False"
+                              IsReadOnly="True"
+                              SelectionMode="Single" SelectionUnit="FullRow"
+                              GridLinesVisibility="Horizontal" HeadersVisibility="Column"
+                              RowHeaderWidth="0" BorderThickness="0" ColumnHeaderHeight="28">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Disk #"       Width="60"  Binding="{Binding DiskNumber}"/>
+                            <DataGridTextColumn Header="Part #"       Width="60"  Binding="{Binding PartitionNumber}"/>
+                            <DataGridTextColumn Header="Drive"        Width="70"  Binding="{Binding DriveLetter}"/>
+                            <DataGridTextColumn Header="Size"         Width="100" Binding="{Binding SizeText}"/>
+                            <DataGridTextColumn Header="Type"         Width="140" Binding="{Binding Type}"/>
+                            <DataGridTextColumn Header="Offset"       Width="140" Binding="{Binding Offset}"/>
+                            <DataGridTextColumn Header="GUID"         Width="*"   Binding="{Binding Guid}"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </DockPanel>
+            </Border>
+
+            <GridSplitter Grid.Row="3" HorizontalAlignment="Stretch"
+                          Background="{DynamicResource MahApps.Brushes.Gray8}"/>
+
+            <!-- Volumes -->
+            <Border Grid.Row="4" Margin="4" BorderBrush="{DynamicResource MahApps.Brushes.Gray8}" BorderThickness="0,1,0,0">
+                <DockPanel>
+                    <TextBlock DockPanel.Dock="Top" Text="VOLUMES"
+                               FontSize="11" FontWeight="SemiBold"
+                               Foreground="{DynamicResource MahApps.Brushes.Gray3}"
+                               Margin="8,6,0,4"/>
+                    <DataGrid x:Name="gridVolumes"
+                              AutoGenerateColumns="False"
+                              CanUserAddRows="False" CanUserDeleteRows="False"
+                              IsReadOnly="True"
+                              SelectionMode="Single" SelectionUnit="FullRow"
+                              GridLinesVisibility="Horizontal" HeadersVisibility="Column"
+                              RowHeaderWidth="0" BorderThickness="0" ColumnHeaderHeight="28">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Drive"        Width="70"  Binding="{Binding DriveLetter}"/>
+                            <DataGridTextColumn Header="Label"        Width="180" Binding="{Binding FileSystemLabel}"/>
+                            <DataGridTextColumn Header="File System"  Width="100" Binding="{Binding FileSystem}"/>
+                            <DataGridTextColumn Header="Size"         Width="100" Binding="{Binding SizeText}"/>
+                            <DataGridTextColumn Header="Free"         Width="100" Binding="{Binding FreeText}"/>
+                            <DataGridTextColumn Header="Free %"       Width="80"  Binding="{Binding FreePct}"/>
+                            <DataGridTextColumn Header="Health"       Width="90"  Binding="{Binding HealthStatus}"/>
+                            <DataGridTextColumn Header="Drive Type"   Width="*"   Binding="{Binding DriveType}"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </DockPanel>
+            </Border>
+        </Grid>
+    </DockPanel>
+</UserControl>

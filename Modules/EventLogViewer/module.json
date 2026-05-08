@@ -1,0 +1,9 @@
+{
+    "Name": "EventLogViewer",
+    "TabLabel": "Event Logs",
+    "Description": "Browse and filter Windows event logs without Event Viewer (mmc.exe). Read-only.",
+    "Version": "1.0.0",
+    "UI": "WPF",
+    "EntryScript": "EventLogViewer.ps1",
+    "InitFunction": "New-EventLogViewerView"
+}

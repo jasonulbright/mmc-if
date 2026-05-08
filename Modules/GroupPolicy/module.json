@@ -1,0 +1,9 @@
+{
+    "Name": "GroupPolicy",
+    "TabLabel": "Group Policy",
+    "Description": "View applied group policy via gpresult /h. Read-only.",
+    "Version": "1.0.0",
+    "UI": "WPF",
+    "EntryScript": "GroupPolicy.ps1",
+    "InitFunction": "New-GroupPolicyView"
+}

@@ -1,0 +1,9 @@
+{
+    "Name": "Disks",
+    "TabLabel": "Disks",
+    "Description": "View physical disks, partitions, and volumes. Read-only.",
+    "Version": "1.0.0",
+    "UI": "WPF",
+    "EntryScript": "Disks.ps1",
+    "InitFunction": "New-DisksView"
+}
