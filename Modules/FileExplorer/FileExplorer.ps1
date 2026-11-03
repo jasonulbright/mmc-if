@@ -69,7 +69,7 @@ function New-FileExplorerView {
         $n.Header = $Label
         $n.Tag = $Path
         if ($Color) {
-            try { $n.Foreground = (New-Object System.Windows.Media.BrushConverter).ConvertFromString($Color) } catch { }
+            try { $n.Foreground = (New-Object System.Windows.Media.BrushConverter).ConvertFromString($Color) } catch { <# Setting a hidden-item color on a tree node is cosmetic, and the node keeps the default color. #> $null = $_ }
         }
         if ($HasChildren) {
             $d = New-Object System.Windows.Controls.TreeViewItem
@@ -97,7 +97,7 @@ function New-FileExplorerView {
                 try {
                     $attrs = [System.IO.File]::GetAttributes($s)
                     if ($attrs -band [System.IO.FileAttributes]::Hidden) { $color = '#888888' }
-                } catch { }
+                } catch { <# Reading file attributes only picks the hidden color, and the node keeps the default color. #> $null = $_ }
 
                 $child = & $makeTreeNode $name $s $hasKids $color
                 $child.Add_Expanded($handlers.Expand)
@@ -181,7 +181,7 @@ function New-FileExplorerView {
                     if ($di.Attributes -band [System.IO.FileAttributes]::ReadOnly) { $list += 'R' }
                     $attrs = $list -join ''
                     $modified = $di.LastWriteTime.ToString('yyyy-MM-dd HH:mm:ss')
-                } catch { }
+                } catch { <# Reading folder date and attributes for display is optional, and the row shows blank columns. #> $null = $_ }
                 & $addFileRow $iconFolder $name '<DIR>' '' $modified $attrs $d $true
             }
 
@@ -203,7 +203,7 @@ function New-FileExplorerView {
                     if ($fi.Attributes -band [System.IO.FileAttributes]::ReadOnly) { $list += 'R' }
                     if ($fi.Attributes -band [System.IO.FileAttributes]::Archive)  { $list += 'A' }
                     $attrs = $list -join ''
-                } catch { }
+                } catch { <# Reading file size, date and attributes for display is optional, and the row shows blank columns. #> $null = $_ }
                 $icon = if (& $isArchive $fi.Name) { $iconArchive } else { $iconFile }
                 $type = if ($ext) { $ext } else { '' }
                 & $addFileRow $icon $fi.Name $type $size $modified $attrs $fi.FullName $false
