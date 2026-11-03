@@ -385,7 +385,7 @@ function New-RegistryBrowserView {
             }
             $defaultVal = $regKey.GetValue('')
             $defaultKind = [Microsoft.Win32.RegistryValueKind]::String
-            try { $defaultKind = $regKey.GetValueKind('') } catch { }
+            try { $defaultKind = $regKey.GetValueKind('') } catch { <# Reading the default value kind falls back to String, which is the preset value for display. #> $null = $_ }
             $state.Values.Add([pscustomobject]@{
                 Name        = '(Default)'
                 TypeName    = & $getTypeName $defaultKind
@@ -924,7 +924,7 @@ function New-RegistryBrowserView {
             if ($null -eq $regKey) { return $null }
             if ($InValues -or $InData) {
                 $vnames = @()
-                try { $vnames = $regKey.GetValueNames() } catch { }
+                try { $vnames = $regKey.GetValueNames() } catch { <# Skipping a key whose value names cannot be read is expected in a registry search with locked keys. #> $null = $_ }
                 foreach ($vn in $vnames) {
                     if ($InValues -and $vn -like "*$Needle*") { return @{ Path = $StartPath; Hit = "value name: $vn" } }
                     if ($InData) {
@@ -933,12 +933,12 @@ function New-RegistryBrowserView {
                             if ($null -ne $v -and $v.ToString() -like "*$Needle*") {
                                 return @{ Path = $StartPath; Hit = "value data of '$vn'" }
                             }
-                        } catch { }
+                        } catch { <# Skipping a value whose data cannot be read is expected in a registry search with locked keys. #> $null = $_ }
                     }
                 }
             }
             $subs = @()
-            try { $subs = $regKey.GetSubKeyNames() | Sort-Object } catch { }
+            try { $subs = $regKey.GetSubKeyNames() | Sort-Object } catch { <# Skipping a key whose subkeys cannot be listed is expected in a registry search with locked keys. #> $null = $_ }
             foreach ($s in $subs) {
                 $childPath = "$StartPath\$s"
                 if ($InKeys -and $s -like "*$Needle*") { return @{ Path = $childPath; Hit = "key: $s" } }
@@ -949,7 +949,7 @@ function New-RegistryBrowserView {
                         $ck = $regKey.OpenSubKey($s, $false)
                         if ($null -ne $ck) {
                             $cvs = @()
-                            try { $cvs = $ck.GetValueNames() } catch { }
+                            try { $cvs = $ck.GetValueNames() } catch { <# Skipping a child key whose value names cannot be read is expected in a registry search with locked keys. #> $null = $_ }
                             foreach ($cv in $cvs) {
                                 if ($InValues -and $cv -like "*$Needle*") { return @{ Path = $childPath; Hit = "value name: $cv" } }
                                 if ($InData) {
@@ -958,11 +958,11 @@ function New-RegistryBrowserView {
                                         if ($null -ne $cvv -and $cvv.ToString() -like "*$Needle*") {
                                             return @{ Path = $childPath; Hit = "value data of '$cv'" }
                                         }
-                                    } catch { }
+                                    } catch { <# Skipping a child value whose data cannot be read is expected in a registry search with locked keys. #> $null = $_ }
                                 }
                             }
                         }
-                    } catch { }
+                    } catch { <# Skipping a child key that cannot be opened is expected in a registry search with locked keys, and the key is disposed in finally. #> $null = $_ }
                     finally { if ($null -ne $ck) { $ck.Dispose() } }
                 }
             }
@@ -1199,7 +1199,7 @@ function Show-RegistryValueEditor {
         $paramNames = @()
         try {
             $paramNames = @($ShowMessage.Ast.ParamBlock.Parameters | ForEach-Object { $_.Name.VariablePath.UserPath })
-        } catch { }
+        } catch { <# Reading the parameter names of the message function is an optional probe, and the code falls back to the call without Owner. #> $null = $_ }
         if ($paramNames -contains 'Owner') {
             & $ShowMessage -Title $Title -Message $Message -Owner $dlg
         }

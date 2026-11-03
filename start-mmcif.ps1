@@ -72,7 +72,7 @@ function Get-MmcIfPreference {
         if ($null -ne $data.DisabledModules)   { $defaults.DisabledModules   = @($data.DisabledModules) }
         if ($null -ne $data.RegistryFavorites) { $defaults.RegistryFavorites = @($data.RegistryFavorites) }
     }
-    catch { }
+    catch { <# Reading the settings file falls back to the defaults when the file is missing or invalid. #> $null = $_ }
     return $defaults
 }
 
@@ -99,7 +99,7 @@ $script:SaveWindowState = {
         Maximized = ($Window.WindowState -eq [System.Windows.WindowState]::Maximized)
     }
     try { $state | ConvertTo-Json | Set-Content -LiteralPath (& $script:GetWindowStatePath) -Encoding UTF8 }
-    catch { }
+    catch { <# Saving the window position is a convenience, and the next start uses the default position. #> $null = $_ }
 }
 
 $script:RestoreWindowState = {
@@ -117,7 +117,7 @@ $script:RestoreWindowState = {
         }
         if ($state.Maximized) { $Window.WindowState = [System.Windows.WindowState]::Maximized }
     }
-    catch { }
+    catch { <# Restoring the saved window position is a convenience, and the window keeps its default position. #> $null = $_ }
 }
 
 # =============================================================================
@@ -280,7 +280,7 @@ if (Test-Path -LiteralPath $manifestPath) {
         $manifest = Get-Content -LiteralPath $manifestPath -Raw | ConvertFrom-Json
         if ($manifest.Version) { $txtAppVersion.Text = "v$($manifest.Version)" }
     }
-    catch { }
+    catch { <# Reading the version stamp for display is cosmetic, and the label stays empty. #> $null = $_ }
 }
 
 # =============================================================================
@@ -396,7 +396,7 @@ function Show-MmcIfThemedMessage {
         if ($inactiveBrush -ne [System.Windows.DependencyProperty]::UnsetValue) {
             $dlg.NonActiveWindowTitleBrush = $Owner.NonActiveWindowTitleBrush
         }
-    } catch { }
+    } catch { <# Copying the owner title brushes to a dialog is cosmetic, and the dialog keeps its default style. #> $null = $_ }
 
     $txtMessage = $dlg.FindName('txtMessage')
     $btnPrimary = $dlg.FindName('btnPrimary')
@@ -605,7 +605,7 @@ $script:ApplyTheme = {
     # Any currently-loaded module's UserControl also needs the theme applied so
     # its DynamicResource bindings pick up the new brushes.
     if ($contentHost -and $contentHost.Content) {
-        try { [ControlzEx.Theming.ThemeManager]::Current.ChangeTheme($contentHost.Content, $themeName) | Out-Null } catch { }
+        try { [ControlzEx.Theming.ThemeManager]::Current.ChangeTheme($contentHost.Content, $themeName) | Out-Null } catch { <# Applying the theme to the loaded module is cosmetic, and the module keeps its current theme. #> $null = $_ }
     }
 }
 
@@ -822,7 +822,7 @@ $dispatcher.add_UnhandledException({
         $msg = "UNHANDLED: {0}`r`n{1}" -f $e.Exception.Message, $e.Exception.StackTrace
         if ($script:WriteLogSb) { & $script:WriteLogSb -Message $msg -Level 'ERROR' }
         & $script:AddLogLine -Message $msg -Level 'ERROR'
-    } catch { }
+    } catch { <# Logging inside the last-resort unhandled exception handler must not raise a second error. #> $null = $_ }
     $e.Handled = $true
 }.GetNewClosure())
 
@@ -831,6 +831,6 @@ try {
 }
 catch {
     $msg = "ShowDialog crash: {0}`r`n{1}" -f $_.Exception.Message, $_.ScriptStackTrace
-    if ($script:WriteLogSb) { try { & $script:WriteLogSb -Message $msg -Level 'ERROR' } catch { } }
-    try { Set-Content -LiteralPath (Join-Path $toolLogFolder 'crash.log') -Value $msg -Encoding UTF8 } catch { }
+    if ($script:WriteLogSb) { try { & $script:WriteLogSb -Message $msg -Level 'ERROR' } catch { <# Writing to the log inside the crash handler is last resort, and the crash file write follows. #> $null = $_ } }
+    try { Set-Content -LiteralPath (Join-Path $toolLogFolder 'crash.log') -Value $msg -Encoding UTF8 } catch { <# Writing the crash file is the last-resort report, and the host ends anyway so a second error adds nothing. #> $null = $_ }
 }

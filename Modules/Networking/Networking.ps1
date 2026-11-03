@@ -61,17 +61,17 @@ function New-NetworkingView {
                     $v6 = @($ipInfo | Where-Object { $_.AddressFamily -eq 'IPv6' })
                     if ($v4.Count -gt 0) { $ipv4 = ($v4 | ForEach-Object { "$($_.IPAddress)/$($_.PrefixLength)" }) -join ', ' }
                     if ($v6.Count -gt 0) { $ipv6 = ($v6 | ForEach-Object { "$($_.IPAddress)/$($_.PrefixLength)" }) -join ', ' }
-                } catch { }
+                } catch { <# The IP address lookup is optional display data, and the adapter row shows empty address columns. #> $null = $_ }
                 try {
                     $route = Get-NetRoute -InterfaceIndex $a.InterfaceIndex -DestinationPrefix '0.0.0.0/0' -ErrorAction Stop
                     if ($route) { $gw = ($route | ForEach-Object { $_.NextHop }) -join ', ' }
-                } catch { }
+                } catch { <# The default gateway lookup is optional display data, and the adapter row shows an empty gateway. #> $null = $_ }
                 try {
                     $dnsCfg = Get-DnsClientServerAddress -InterfaceIndex $a.InterfaceIndex -ErrorAction Stop
                     $serverList = @()
                     foreach ($d in $dnsCfg) { $serverList += $d.ServerAddresses }
                     $dns = ($serverList | Where-Object { $_ }) -join ', '
-                } catch { }
+                } catch { <# The DNS server lookup is optional display data, and the adapter row shows an empty DNS column. #> $null = $_ }
 
                 $state.Rows.Add([pscustomobject]@{
                     Name                 = $a.Name
